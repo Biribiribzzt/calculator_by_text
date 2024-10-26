@@ -18,5 +18,13 @@
     <ClCompile Include="calculator_by_text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stringtoprocess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stringtoprocess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

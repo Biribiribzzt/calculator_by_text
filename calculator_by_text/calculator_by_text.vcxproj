@@ -128,6 +128,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="calculator_by_text.cpp" />
+    <ClCompile Include="stringtoprocess.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stringtoprocess.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
