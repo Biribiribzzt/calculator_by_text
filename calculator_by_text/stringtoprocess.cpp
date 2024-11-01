@@ -3,157 +3,153 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <cmath> 
-#include <cctype> 
+#include <cmath>
+#include <cctype>
 #include <algorithm>
 
 using namespace std;
 
-// Constructor
-Texttomath::Texttomath(const string& input) {
-    processtext = input;
-    finalresult = splitString(processtext, ' ');
+uint32_t Texttomath::count = 0; // Initialize static variable
+string Texttomath::external_name[MAX_VAR] = {};
+long double Texttomath::external_value[MAX_VAR] = {}; 
 
-    for (int i = 0; i < finalresult.size(); i++) {
+// main constrictor
+Texttomath::Texttomath(string input) {
+    processtext = input;
+    splitString(processtext,finalresult[0], finalresult[1],finalresult[2]);
+
+    for (int i = 0; i < 3; i++) {
         cout << finalresult[i] << endl;
     }
-    cout << finalresult.size() << endl;
 
-    // Ensure finalresult has at least 3 elements before accessing indices
-    if (finalresult.size() < 3) {
-        cout << "Error: Input does not have enough components." << endl;
-        return;
+    cout << "Answer : " << calculate() << endl;
+
+    count++;
+}
+
+//constrctor2 show debug.
+Texttomath::Texttomath(string input, uint16_t show_debug) {
+    processtext = input;
+    splitString(processtext, finalresult[0], finalresult[1], finalresult[2]);
+
+    for (int i = 0; i < 3; i++) {
+        cout << finalresult[i] << endl;
     }
     
+    cout << "Answer : " << calculate() << endl;
+    debug();
+    count++;
 }
 
-int Texttomath::checkcase(const string& context) {
-    vector<string> tokens = splitString(context, ' ');
+//checkcase of variable 
+uint16_t Texttomath::checkcase(const string& context) {
+    splitString(context, finalresult[0], finalresult[1], finalresult[2]);
 
-    // Ensure tokens has enough elements to check cases
-    if (tokens.size() < 3) {
-        cout << "Error: Insufficient elements in context." << endl;
-        return -1; // Return an error code or handle it as needed
+    if (finalresult[0].empty() || finalresult[2].empty()) {
+        cout << "Error: Invalid input format in checkcase." << std::endl;
+        return 0; // Return error code
     }
 
-    // Function to check if a string represents a number
-    auto isNumber = [](const string& s) -> bool {
-        // Check if every character is a digit (simplified; you may want to handle decimals or negatives)
-        return !s.empty() && all_of(s.begin(), s.end(), ::isdigit);
-        };
+    // Lambda to check if a string is a valid long double
+    auto isLongDouble = [](const string& s) -> bool {
+        try {
+            stold(s);  
+            return true;
+        }
+        catch (const std::invalid_argument& e) {
+            return false; 
+        }
+        catch (const std::out_of_range& e) {
+            return false;   
+        }
+    };
 
-    // Determine the case based on operand types
-    bool firstIsNumber = isNumber(tokens[0]);
-    bool secondIsNumber = isNumber(tokens[2]);
+    bool firstIsLongDouble = isLongDouble(finalresult[0]);
+    bool secondIsLongDouble = isLongDouble(finalresult[2]);
 
-    if (firstIsNumber && secondIsNumber) {
-        return 1; // Case 1: Number and Number
+    if (firstIsLongDouble && secondIsLongDouble) {
+        return 1;
     }
-    else if (!firstIsNumber && !secondIsNumber) {
-        return 2; // Case 2: Variable and Variable
+    else if (!firstIsLongDouble && !secondIsLongDouble) {
+        return 2;
     }
-    else if (!firstIsNumber && secondIsNumber) {
-        return 3; // Case 3: Variable and Number
+    else if (!firstIsLongDouble && secondIsLongDouble) {
+        return 3;
     }
-    else if (firstIsNumber && !secondIsNumber) {
-        return 4; // Case 4: Number and Variable
+    else if (firstIsLongDouble && !secondIsLongDouble) {
+        return 4;
     }
 
-    // Default return for unexpected input
-    cout << "Error: Unhandled case." << endl;
-    return -1;
+    std::cout << "Error: Unhandled case in checkcase." << std::endl;
+    return 5;
+
 }
 
-// Function to split string by user-defined delimiter
-vector<string> Texttomath::splitString(const string& str, char delimiter) {
-    vector<string> result;
-    string token;
-    istringstream tokenStream(str);
-
-    while (getline(tokenStream, token, delimiter)) {
-        result.push_back(token);
-    }
-
-    return result;
+//split the string
+void Texttomath::splitString(const string& str, string& part1, string& part2, string& part3) { 
+    std::istringstream stream(str);
+    std::getline(stream, part1, ' ');
+    std::getline(stream, part2, ' ');
+    std::getline(stream, part3, ' ');
 }
 
-
-// Finds a number associated with a variable name
-double Texttomath::findnumberat(const string& content) {
-    for (size_t i = 0; i < external_name.size(); ++i) {
+ //find number in other array by seaching text
+long double Texttomath::findnumberat(const string& content) {
+    for (size_t i = 0; i < MAX_VAR; ++i) {
         if (external_name[i] == content) {
             return external_value[i];
         }
     }
     cout << "Variable " << content << " not found!" << endl;
-    return 0.0; // Default value if variable is not found
+    return 0.0;
 }
 
-// Determines the operation based on the operator string
-int Texttomath::Return_process() {
-    string opt = finalresult.size() > 1 ? finalresult[1] : "Operator doesn't exist";
-    if (opt == "+") {
-        process = 1;
-    }
-    else if (opt == "-") {
-        process = 2;
-    }
-    else if (opt == "*") {
-        process = 3;
-    }
-    else if (opt == "/") {
-        process = 4;
-    }
-    else if (opt == "^") {
-        process = 5;
-    }
-    else if (opt == "=") {
-        is_assinging = true;
-        process = 6;
-    }
-    else {
-        process = 404; // Not found
-    }
-    return process;
+//Return the operator of text
+uint16_t Texttomath::Return_process() { 
+    string opt = finalresult[1].empty() ? "Operator doesn't exist" : finalresult[1];
+    if (opt == "+") return process = 1;
+    else if (opt == "-") return process = 2;
+    else if (opt == "*") return process = 3;
+    else if (opt == "/") return process = 4;
+    else if (opt == "^") return process = 5;
+    else if (opt == "=") return process = 6;
 }
 
-// Perform calculations based on case index
-double Texttomath::calculate() {
+//calculate the input text by check_case and return_process
+long double Texttomath::calculate() { 
     int case_index = checkcase(processtext);
-    double num1 = 0;
-    double num2 = 0;
-    int process_index = Return_process();
+    long double num1 = 0;
+    long double num2 = 0; 
+    uint16_t process_index = Return_process();
+
+    if (is_error) {
+        cout << "Error: Calculation cannot proceed due to invalid input format." << endl;
+        return 0.0;
+    }
 
     switch (case_index) {
-    case 1: // Number and Number
-        if (finalresult.size() == 3) { // Ensure indices are accessible
-            num1 = stod(finalresult[0]);
-            num2 = stod(finalresult[2]);
+    case 1:
+        num1 = stold(finalresult[0]);
+        num2 = stold(finalresult[2]);
+        break;
+    case 2:
+        num1 = findnumberat(finalresult[0]);
+        num2 = findnumberat(finalresult[2]);
+        break;
+    case 3:
+        if (process_index == 6) {
+            external_name[count] = (finalresult[0]);
+            external_value[count] = stold(finalresult[2]);
+            break;
         }
         else {
-            cout << "Error: Insufficient elements for calculation." << endl;
-            return 0.0;
+            num1 = findnumberat(finalresult[0]);
+            num2 = stold(finalresult[2]);
+            break;
         }
-        break;
-    case 2: // Variable and Variable
-        num1 = findnumberat(finalresult[0]);
+    case 4:
+        num1 = stold(finalresult[0]);
         num2 = findnumberat(finalresult[2]);
-        break;
-    case 3: // Variable and Number
-        num1 = findnumberat(finalresult[0]);
-        num2 = stod(finalresult[2]);
-        break;
-    case 4: // Number and Variable
-        num1 = stod(finalresult[0]);
-        num2 = findnumberat(finalresult[2]);
-        break;
-    case 5: // Assignment
-        if (process_index == 6) {
-            external_name.push_back(finalresult[0]);
-            external_value.push_back(stod(finalresult[2]));
-            cout << "Finished assigning variable." << endl;
-            return 0.0; // No operation result for assignment
-        }
         break;
     default:
         cout << "Invalid calculation case!" << endl;
@@ -161,45 +157,43 @@ double Texttomath::calculate() {
     }
 
     switch (process_index) {
-    case 1:
-        return num1 + num2;
-    case 2:
-        return num1 - num2;
-    case 3:
-        return num1 * num2;
-    case 4:
-        if (num2 != 0) {
-            return num1 / num2;
-        }
-        else {
-            cout << "Error: Division by zero." << endl;
-            return 0.0;
-        }
-    case 5:
-        return pow(num1, num2); // Correct exponentiation
-    case 404:
-        cout << "Error: process not found" << endl;
-        return 0.0;
+    case 1: return num1 + num2; break;
+    case 2: return num1 - num2; break;
+    case 3: return num1 * num2; break;
+    case 4: return (num2 != 0) ? num1 / num2 : (cout << "Error: Division by zero." << endl, 0.0); break;
+    case 5: return pow(num1, num2); break;
+    case 6: cout << "variable initialization" << endl; break;
     default:
         cout << "No valid operation found." << endl;
-        return 0.0;
+        return 0;
+        break;
     }
 }
 
-// Prints test message with processed results
-void Texttomath::print_text_test() {
+//debug function. Show all of infomations 
+void Texttomath::debug() {  
     cout << "Processed text: " << processtext << endl;
-    cout << "Operation code: " << process << endl;
+    cout << "Operation code: " << Return_process() << endl;
+    cout << "Case code: " << checkcase(processtext) << endl;
     cout << "Is external variable: " << is_external_variable << endl;
 
     if (!is_external_variable) {
         cout << "Number1: " << stod(finalresult[0]) << ", Number2: " << stod(finalresult[2]) << endl;
-    }
-    else {
-        for (int i = 0; i < external_name.size(); i++) {
-            cout << external_name[i] << " = " << external_value[i] << endl;
-        }
+    } else {
+        display_variable();
     }
 
-    cout << "answer : " << calculate() << endl;
+    cout << "Answer: " << calculate() << endl;
+}
+
+// function to show varible in arrange ways
+void Texttomath::display_variable() { 
+    for(uint16_t i = 0; i < MAX_VAR; i++) {
+        string ptr = external_name[i];
+        if (ptr != "") { cout << "[" << external_name[i] << "=" << external_value[i] << "] "; }
+        else { cout << "[variable not intialize] "; }
+
+        if (i%2 == 0) { cout << endl; }
+    }
+    cout << endl;
 }

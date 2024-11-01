@@ -4,9 +4,11 @@ using namespace std;
 
 
 int main() {
-    string input = "10ZZ + 5"; // Example input
-    Texttomath mathProcessor(input);
-
-    mathProcessor.print_text_test(); // Outputs processed results and answer
+    string input;
+    while (input != "exit") {
+        getline(cin, input);
+        Texttomath mathProcessor(input,1);
+    }
+    cout << "program exit" << endl;
     return 0;
 }
