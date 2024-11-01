@@ -9,40 +9,43 @@
 
 using namespace std;
 
-uint32_t Texttomath::count = 0; // Initialize static variable
+uint32_t Texttomath::count = 1; // Initialize static variable
 string Texttomath::external_name[MAX_VAR] = {};
 long double Texttomath::external_value[MAX_VAR] = {}; 
 
 // main constrictor
 Texttomath::Texttomath(string input) {
     processtext = input;
-    splitString(processtext,finalresult[0], finalresult[1],finalresult[2]);
 
-    for (int i = 0; i < 3; i++) {
-        cout << finalresult[i] << endl;
-    }
+}
 
-    cout << "Answer : " << calculate() << endl;
+Texttomath::Texttomath(string input,uint8_t quick) {
+    processtext = input;
+    splitString(processtext, finalresult[0], finalresult[1], finalresult[2]);
+    external_name[0] = "ans";
+    external_value[0] = calculate();
+    cout << "Answer : " << external_value[0] << endl;
 
-    count++;
 }
 
 //constrctor2 show debug.
-Texttomath::Texttomath(string input, uint16_t show_debug) {
-    processtext = input;
+void Texttomath::Texttomathdisplay(uint8_t mode) {
     splitString(processtext, finalresult[0], finalresult[1], finalresult[2]);
+    external_name[0] = "ans";
+    external_value[0] = calculate();
+    cout << "Answer : " << external_value[0] << endl;
 
-    for (int i = 0; i < 3; i++) {
-        cout << finalresult[i] << endl;
+    if(mode == 1)
+    {
+        for (int i = 0; i < 3; i++) {
+            cout << finalresult[i] << endl;
+        }
+        debug();
     }
-    
-    cout << "Answer : " << calculate() << endl;
-    debug();
-    count++;
 }
 
 //checkcase of variable 
-uint16_t Texttomath::checkcase(const string& context) {
+uint8_t Texttomath::checkcase(const string& context) {
     splitString(context, finalresult[0], finalresult[1], finalresult[2]);
 
     if (finalresult[0].empty() || finalresult[2].empty()) {
@@ -105,7 +108,7 @@ long double Texttomath::findnumberat(const string& content) {
 }
 
 //Return the operator of text
-uint16_t Texttomath::Return_process() { 
+uint8_t Texttomath::Return_process() { 
     string opt = finalresult[1].empty() ? "Operator doesn't exist" : finalresult[1];
     if (opt == "+") return process = 1;
     else if (opt == "-") return process = 2;
@@ -113,6 +116,8 @@ uint16_t Texttomath::Return_process() {
     else if (opt == "/") return process = 4;
     else if (opt == "^") return process = 5;
     else if (opt == "=") return process = 6;
+
+    return 404;
 }
 
 //calculate the input text by check_case and return_process
@@ -120,7 +125,7 @@ long double Texttomath::calculate() {
     int case_index = checkcase(processtext);
     long double num1 = 0;
     long double num2 = 0; 
-    uint16_t process_index = Return_process();
+    uint8_t process_index = Return_process();
 
     if (is_error) {
         cout << "Error: Calculation cannot proceed due to invalid input format." << endl;
@@ -133,13 +138,18 @@ long double Texttomath::calculate() {
         num2 = stold(finalresult[2]);
         break;
     case 2:
-        num1 = findnumberat(finalresult[0]);
-        num2 = findnumberat(finalresult[2]);
-        break;
+        if (process_index == 6) {
+            num1 = assign(finalresult[0], findnumberat(finalresult[2]));
+            break;
+        }
+        else {
+            num1 = findnumberat(finalresult[0]);
+            num2 = findnumberat(finalresult[2]);
+            break;
+        }
     case 3:
         if (process_index == 6) {
-            external_name[count] = (finalresult[0]);
-            external_value[count] = stold(finalresult[2]);
+            num1 = assign(finalresult[0], stold(finalresult[2]));
             break;
         }
         else {
@@ -162,18 +172,20 @@ long double Texttomath::calculate() {
     case 3: return num1 * num2; break;
     case 4: return (num2 != 0) ? num1 / num2 : (cout << "Error: Division by zero." << endl, 0.0); break;
     case 5: return pow(num1, num2); break;
-    case 6: cout << "variable initialization" << endl; break;
+    case 6: cout << "variable initialized" << endl; return num1; break;
     default:
         cout << "No valid operation found." << endl;
         return 0;
         break;
     }
+
+    return 0;
 }
 
 //debug function. Show all of infomations 
 void Texttomath::debug() {  
     cout << "Processed text: " << processtext << endl;
-    cout << "Operation code: " << Return_process() << endl;
+    cout << "Operation code: " << finalresult[1] << endl;
     cout << "Case code: " << checkcase(processtext) << endl;
     cout << "Is external variable: " << is_external_variable << endl;
 
@@ -188,7 +200,7 @@ void Texttomath::debug() {
 
 // function to show varible in arrange ways
 void Texttomath::display_variable() { 
-    for(uint16_t i = 0; i < MAX_VAR; i++) {
+    for(uint64_t i = 0; i < MAX_VAR; i++) {
         string ptr = external_name[i];
         if (ptr != "") { cout << "[" << external_name[i] << "=" << external_value[i] << "] "; }
         else { cout << "[variable not intialize] "; }
@@ -196,4 +208,25 @@ void Texttomath::display_variable() {
         if (i%2 == 0) { cout << endl; }
     }
     cout << endl;
+}
+
+long double Texttomath::assign(const string name,long double value) {
+    bool is_repeated = false;
+    for (uint64_t i = 0; i < MAX_VAR; ++i) {
+        if (external_name[i] == name) {
+            external_value[i] = value;
+            is_repeated = true;
+            break;
+        }
+        else {
+            is_repeated = false;
+        }
+    }
+    if (is_repeated == false) 
+    {
+        external_name[count] = name;
+        external_value[count] = value;
+        count++;
+    }
+    return value;
 }

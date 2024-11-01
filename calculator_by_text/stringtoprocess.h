@@ -13,7 +13,8 @@ class Texttomath {
 public:
     //constrctor
     Texttomath(string input);
-    Texttomath(string input, uint16_t show_debug);
+    Texttomath(string input,uint8_t quick);
+    void Texttomathdisplay(uint8_t show_debug);
     //count of class create
     static uint32_t count;
 
@@ -32,8 +33,8 @@ private:
     static long double external_value[MAX_VAR];
 
     //variable of int
-    uint16_t process;
-    uint16_t internal_number;
+    uint8_t process;
+    uint8_t internal_number;
 
     //variable of bool
     bool is_external_variable;
@@ -41,10 +42,14 @@ private:
     bool test = false;
     bool is_error = false;
 
+    //temp_variable
+    long double temp;
+
     //function 
+    long double assign(const string content, long double value);
     long double findnumberat(const string& content); //this function find by searching input text
-    uint16_t checkcase(const string& context); //this check if any of input are text suitable for variable
-    uint16_t Return_process();
+    uint8_t checkcase(const string& context); //this check if any of input are text suitable for variable
+    uint8_t Return_process();
     void splitString(const string& str, string& part1, string& part2, string& part3); //this function split string
 };
 
