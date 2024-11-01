@@ -7,6 +7,7 @@
 #include <cctype>
 #include <algorithm>
 #include <iomanip>
+
 using namespace std;
 
 uint32_t Texttomath::count = 1; // Initialize static variable
@@ -21,16 +22,21 @@ Texttomath::Texttomath(string input) {
     internal_number = 0;
     is_external_variable = 0;
     is_assinging = 0;
+    is_intialized = 0;
+    is_error = 0;
+
 }
 
 Texttomath::Texttomath(string input,uint8_t quick) {
     processtext = input;
     splitString(processtext, finalresult[0], finalresult[1], finalresult[2]);
     external_name[0] = "ans";
+    is_error = 0;
     external_value[0] = calculate();
     if(!is_error)
     {
         cout << setprecision(OUT_PRECI) << "Answer : " << external_value[0] << endl;
+        cout << "-----------------------------------" << endl;
     }
 
 }
@@ -43,6 +49,7 @@ void Texttomath::Texttomathdisplay(uint8_t mode) {
     if (!is_error)
     {
         cout << setprecision(OUT_PRECI) << "Answer : " << external_value[0] << endl;
+        cout << "-----------------------------------" << endl;
     }
 
     if(mode == 1)
@@ -193,7 +200,7 @@ long double Texttomath::calculate() {
     case 3: return num1 * num2; break;
     case 4: return (num2 != 0) ? num1 / num2 : (cout << "Error: Division by zero." << endl, 0.0); break;
     case 5: return pow(num1, num2); break;
-    case 6: cout << "variable initialized" << endl; return num1; break;
+    case 6: if (is_intialized) { cout << "variable intialized" << endl; } is_error = 1; return num1; break;
     case 7: return factorial(num1); break;
     default:
         cout << "No valid operation found." << endl;
@@ -257,5 +264,6 @@ long double Texttomath::assign(const string name,long double value) {
             cout << "variable exceed the limit" << endl;
         }
     }
+    is_intialized = true;
     return value;
 }

@@ -43,6 +43,7 @@ private:
     bool is_assinging;
     bool test = false;
     bool is_error = false;
+    bool is_intialized = false;
 
     //temp_variable
     long double temp;
