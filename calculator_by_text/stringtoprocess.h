@@ -29,7 +29,7 @@ private:
     string processtext;
 
     //array 
-    const int max = MAX_VAR;
+    const uint64_t max = MAX_VAR;
     string finalresult[3];           
     static string external_name[MAX_VAR];
     static long double external_value[MAX_VAR];
