@@ -31,7 +31,6 @@ Texttomath::Texttomath(string input,uint8_t quick) {
     if(!is_error)
     {
         cout << setprecision(OUT_PRECI) << "Answer : " << external_value[0] << endl;
-        external_value[0] = 0;
     }
 
 }
@@ -44,7 +43,6 @@ void Texttomath::Texttomathdisplay(uint8_t mode) {
     if (!is_error)
     {
         cout << setprecision(OUT_PRECI) << "Answer : " << external_value[0] << endl;
-        external_value[0] = 0;
     }
 
     if(mode == 1)
