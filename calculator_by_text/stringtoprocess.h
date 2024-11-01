@@ -4,8 +4,10 @@
 #include<string>
 #include<vector>
 #include<sstream>
+#include<iomanip>
 
 #define MAX_VAR 30
+#define OUT_PRECI 30
 
 using namespace std;
 

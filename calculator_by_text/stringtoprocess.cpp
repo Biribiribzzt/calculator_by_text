@@ -6,7 +6,7 @@
 #include <cmath>
 #include <cctype>
 #include <algorithm>
-
+#include <iomanip>
 using namespace std;
 
 uint32_t Texttomath::count = 1; // Initialize static variable
@@ -16,7 +16,11 @@ long double Texttomath::external_value[MAX_VAR] = {};
 // main constrictor
 Texttomath::Texttomath(string input) {
     processtext = input;
-
+    temp = 0;
+    process = 0;
+    internal_number = 0;
+    is_external_variable = 0;
+    is_assinging = 0;
 }
 
 Texttomath::Texttomath(string input,uint8_t quick) {
@@ -24,7 +28,11 @@ Texttomath::Texttomath(string input,uint8_t quick) {
     splitString(processtext, finalresult[0], finalresult[1], finalresult[2]);
     external_name[0] = "ans";
     external_value[0] = calculate();
-    cout << "Answer : " << external_value[0] << endl;
+    if(!is_error)
+    {
+        cout << setprecision(OUT_PRECI) << "Answer : " << external_value[0] << endl;
+        external_value[0] = 0;
+    }
 
 }
 
@@ -33,7 +41,11 @@ void Texttomath::Texttomathdisplay(uint8_t mode) {
     splitString(processtext, finalresult[0], finalresult[1], finalresult[2]);
     external_name[0] = "ans";
     external_value[0] = calculate();
-    cout << "Answer : " << external_value[0] << endl;
+    if (!is_error)
+    {
+        cout << setprecision(OUT_PRECI) << "Answer : " << external_value[0] << endl;
+        external_value[0] = 0;
+    }
 
     if(mode == 1)
     {
@@ -103,7 +115,7 @@ long double Texttomath::findnumberat(const string& content) {
             return external_value[i];
         }
     }
-    cout << "Variable " << content << " not found!" << endl;
+    cout << "Variable " << content << " not found!" << endl; is_error = true;
     return 0.0;
 }
 
@@ -116,8 +128,19 @@ uint8_t Texttomath::Return_process() {
     else if (opt == "/") return process = 4;
     else if (opt == "^") return process = 5;
     else if (opt == "=") return process = 6;
+    else if (opt == "!") return process = 7;
 
-    return 404;
+    else return 404;
+}
+
+long double factorial(int n) {
+    if (n < 0) return 0; // Factorial is not defined for negative numbers
+    if (n == 0) return 1; // Base case: 0! = 1
+    long double result = 1;
+    for (int i = 1; i <= n; ++i) {
+        result *= i;
+    }
+    return result;
 }
 
 //calculate the input text by check_case and return_process
@@ -173,6 +196,7 @@ long double Texttomath::calculate() {
     case 4: return (num2 != 0) ? num1 / num2 : (cout << "Error: Division by zero." << endl, 0.0); break;
     case 5: return pow(num1, num2); break;
     case 6: cout << "variable initialized" << endl; return num1; break;
+    case 7: return factorial(num1); break;
     default:
         cout << "No valid operation found." << endl;
         return 0;
@@ -224,9 +248,16 @@ long double Texttomath::assign(const string name,long double value) {
     }
     if (is_repeated == false) 
     {
-        external_name[count] = name;
-        external_value[count] = value;
-        count++;
+        if(count < MAX_VAR)
+        {
+            external_name[count] = name;
+            external_value[count] = value;
+            count++;
+        }
+        else
+        {
+            cout << "variable exceed the limit" << endl;
+        }
     }
     return value;
 }
