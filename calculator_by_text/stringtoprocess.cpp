@@ -105,7 +105,7 @@ uint8_t Texttomath::checkcase(const string& context) {
 
 }
 
-//split the string
+//split the string 22 + 7 --> part 1 = 22 ,part 2 = + ,part 3 = 7
 void Texttomath::splitString(const string& str, string& part1, string& part2, string& part3) { 
     std::istringstream stream(str);
     std::getline(stream, part1, ' ');
@@ -168,16 +168,19 @@ long double Texttomath::calculate() {
     case 2:
         if (process_index == 6) {
             num1 = assign(finalresult[0], findnumberat(finalresult[2]));
+            is_external_variable = 1;
             break;
         }
         else {
             num1 = findnumberat(finalresult[0]);
             num2 = findnumberat(finalresult[2]);
+            is_external_variable = 1;
             break;
         }
     case 3:
         if (process_index == 6) {
             num1 = assign(finalresult[0], stold(finalresult[2]));
+            is_external_variable = 1;
             break;
         }
         else {
@@ -219,7 +222,7 @@ void Texttomath::debug() {
     cout << "Is external variable: " << is_external_variable << endl;
 
     if (!is_external_variable) {
-        cout << "Number1: " << stod(finalresult[0]) << ", Number2: " << stod(finalresult[2]) << endl;
+        cout << "Number1: " << stold(finalresult[0]) << ", Number2: " << stod(finalresult[2]) << endl;
     } else {
         display_variable();
     }

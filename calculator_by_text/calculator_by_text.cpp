@@ -29,7 +29,7 @@ int main() {
         }
         else
         {
-            mathProcessor.Texttomathdisplay(0);
+            mathProcessor.Texttomathdisplay(1);
         }
 
     } while (input != "exit");
