@@ -66,7 +66,7 @@ uint8_t Texttomath::checkcase(const string& context) {
     splitString(context, finalresult[0], finalresult[1], finalresult[2]);
 
     if (finalresult[0].empty() || finalresult[2].empty()) {
-        cout << "Error: Invalid input format in checkcase." << std::endl;
+        cout << "Error: Invalid input format." << std::endl;
         return 0; // Return error code
     }
 
@@ -217,7 +217,7 @@ long double Texttomath::calculate() {
         num2 = findnumberat(finalresult[2]);
         break;
     default:
-        cout << "Invalid calculation case!" << endl;
+        cout << "Couldn't recogize text and number." << endl;
         return 0.0;
     }
 
@@ -293,4 +293,39 @@ long double Texttomath::assign(const string name,long double value) {
     }
     is_intialized = true;
     return value;
+}
+
+long double Texttomath::mean() {
+    long double total = 0;
+    long double count1 = 0;
+    if(count > 1)
+    {
+        for (int i = 1; i < count; i++) {
+            total += external_value[i];
+            count1++;
+
+        }
+        return total / count1;
+    }
+    else {
+        cout << "too few variable" << endl;
+        return 0;
+    }
+
+}
+
+long double Texttomath::total() {
+    long double total = 0;
+    if (count > 1)
+    {
+        for (int i = 1; i < count; i++) {
+            total += external_value[i];
+        }
+        return total;
+    }
+    else {
+        cout << "too few variable" << endl;
+        return 0;
+    }
+
 }

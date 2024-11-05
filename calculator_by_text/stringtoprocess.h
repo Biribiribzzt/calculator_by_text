@@ -25,6 +25,8 @@ public:
     void display_variable(); //display all of variable
     void debug();//debug
     long double calculate();// function calculate
+    long double mean();
+    long double total();
 private:
     //input text
     string processtext;
@@ -56,6 +58,7 @@ private:
     uint8_t checkcase(const string& context); //this check if any of input are text suitable for variable
     uint8_t Return_process();
     void splitString(const string& str, string& part1, string& part2, string& part3); //this function split string
+    void change_arr_size(int size);
     
 };
 
