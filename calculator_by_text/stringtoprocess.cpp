@@ -105,12 +105,36 @@ uint8_t Texttomath::checkcase(const string& context) {
 
 }
 
-//split the string 22 + 7 --> part 1 = 22 ,part 2 = + ,part 3 = 7
-void Texttomath::splitString(const string& str, string& part1, string& part2, string& part3) { 
-    std::istringstream stream(str);
-    std::getline(stream, part1, ' ');
-    std::getline(stream, part2, ' ');
-    std::getline(stream, part3, ' ');
+void Texttomath::splitString(const string& str, string& part1, string& part2, string& part3) {
+    string trimmedStr = str;
+
+    // Remove any spaces from the string
+    trimmedStr.erase(remove(trimmedStr.begin(), trimmedStr.end(), ' '), trimmedStr.end());
+
+    // Look for the position of the operator (+, -, *, /) in the string
+    size_t operatorPos = string::npos;
+    for (size_t i = 0; i < trimmedStr.size(); ++i) {
+        if (trimmedStr[i] == '+' || trimmedStr[i] == '-' || trimmedStr[i] == '*' || trimmedStr[i] == '/' || trimmedStr[i] == '^' || trimmedStr[i] == '!' || trimmedStr[i] == '=') {
+            operatorPos = i;
+            break;
+        }
+    }
+
+    // If an operator is found, split the string into two parts based on the operator
+    if (operatorPos != string::npos) {
+        // Part 1: The substring before the operator
+        part1 = trimmedStr.substr(0, operatorPos);
+
+        // Part 2: The operator itself
+        part2 = string(1, trimmedStr[operatorPos]);
+
+        // Part 3: The substring after the operator
+        part3 = trimmedStr.substr(operatorPos + 1);
+    }
+    else {
+        // If no operator is found, it's an invalid format
+        part1 = part2 = part3 = "";
+    }
 }
 
  //find number in other array by seaching text

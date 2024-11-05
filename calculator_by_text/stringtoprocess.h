@@ -28,6 +28,7 @@ public:
 private:
     //input text
     string processtext;
+    string operator_list = "+-*/^!=";
 
     //array 
     const uint64_t max = MAX_VAR;
@@ -55,5 +56,6 @@ private:
     uint8_t checkcase(const string& context); //this check if any of input are text suitable for variable
     uint8_t Return_process();
     void splitString(const string& str, string& part1, string& part2, string& part3); //this function split string
+    
 };
 
