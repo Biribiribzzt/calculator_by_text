@@ -7,7 +7,7 @@
 #include<iomanip>
 
 #define MAX_VAR 30
-#define OUT_PRECI 30
+#define OUT_PRECI 20
 
 using namespace std;
 
@@ -17,16 +17,20 @@ public:
     Texttomath(string input);
     Texttomath(string input,uint8_t quick);
     void Texttomathdisplay(uint8_t show_debug);
+   
     //count of class create
     static uint32_t count;
 
     //function to call
     void display_variable(); //display all of variable
-    void debug();
-    long double calculate();
+    void debug();//debug
+    long double calculate();// function calculate
+    long double mean();
+    long double total();
 private:
     //input text
     string processtext;
+    string operator_list = "+-*/^!=";
 
     //array 
     const uint64_t max = MAX_VAR;
@@ -54,5 +58,7 @@ private:
     uint8_t checkcase(const string& context); //this check if any of input are text suitable for variable
     uint8_t Return_process();
     void splitString(const string& str, string& part1, string& part2, string& part3); //this function split string
+    void change_arr_size(int size);
+    
 };
 

@@ -66,7 +66,7 @@ uint8_t Texttomath::checkcase(const string& context) {
     splitString(context, finalresult[0], finalresult[1], finalresult[2]);
 
     if (finalresult[0].empty() || finalresult[2].empty()) {
-        cout << "Error: Invalid input format in checkcase." << std::endl;
+        cout << "Error: Invalid input format." << std::endl;
         return 0; // Return error code
     }
 
@@ -105,12 +105,36 @@ uint8_t Texttomath::checkcase(const string& context) {
 
 }
 
-//split the string
-void Texttomath::splitString(const string& str, string& part1, string& part2, string& part3) { 
-    std::istringstream stream(str);
-    std::getline(stream, part1, ' ');
-    std::getline(stream, part2, ' ');
-    std::getline(stream, part3, ' ');
+void Texttomath::splitString(const string& str, string& part1, string& part2, string& part3) {
+    string trimmedStr = str;
+
+    // Remove any spaces from the string
+    trimmedStr.erase(remove(trimmedStr.begin(), trimmedStr.end(), ' '), trimmedStr.end());
+
+    // Look for the position of the operator (+, -, *, /) in the string
+    size_t operatorPos = string::npos;
+    for (size_t i = 0; i < trimmedStr.size(); ++i) {
+        if (trimmedStr[i] == '+' || trimmedStr[i] == '-' || trimmedStr[i] == '*' || trimmedStr[i] == '/' || trimmedStr[i] == '^' || trimmedStr[i] == '!' || trimmedStr[i] == '=') {
+            operatorPos = i;
+            break;
+        }
+    }
+
+    // If an operator is found, split the string into two parts based on the operator
+    if (operatorPos != string::npos) {
+        // Part 1: The substring before the operator
+        part1 = trimmedStr.substr(0, operatorPos);
+
+        // Part 2: The operator itself
+        part2 = string(1, trimmedStr[operatorPos]);
+
+        // Part 3: The substring after the operator
+        part3 = trimmedStr.substr(operatorPos + 1);
+    }
+    else {
+        // If no operator is found, it's an invalid format
+        part1 = part2 = part3 = "";
+    }
 }
 
  //find number in other array by seaching text
@@ -168,16 +192,19 @@ long double Texttomath::calculate() {
     case 2:
         if (process_index == 6) {
             num1 = assign(finalresult[0], findnumberat(finalresult[2]));
+            is_external_variable = 1;
             break;
         }
         else {
             num1 = findnumberat(finalresult[0]);
             num2 = findnumberat(finalresult[2]);
+            is_external_variable = 1;
             break;
         }
     case 3:
         if (process_index == 6) {
             num1 = assign(finalresult[0], stold(finalresult[2]));
+            is_external_variable = 1;
             break;
         }
         else {
@@ -190,7 +217,7 @@ long double Texttomath::calculate() {
         num2 = findnumberat(finalresult[2]);
         break;
     default:
-        cout << "Invalid calculation case!" << endl;
+        cout << "Couldn't recogize text and number." << endl;
         return 0.0;
     }
 
@@ -219,7 +246,7 @@ void Texttomath::debug() {
     cout << "Is external variable: " << is_external_variable << endl;
 
     if (!is_external_variable) {
-        cout << "Number1: " << stod(finalresult[0]) << ", Number2: " << stod(finalresult[2]) << endl;
+        cout << "Number1: " << stold(finalresult[0]) << ", Number2: " << stod(finalresult[2]) << endl;
     } else {
         display_variable();
     }
@@ -266,4 +293,39 @@ long double Texttomath::assign(const string name,long double value) {
     }
     is_intialized = true;
     return value;
+}
+
+long double Texttomath::mean() {
+    long double total = 0;
+    long double count1 = 0;
+    if(count > 1)
+    {
+        for (int i = 1; i < count; i++) {
+            total += external_value[i];
+            count1++;
+
+        }
+        return total / count1;
+    }
+    else {
+        cout << "too few variable" << endl;
+        return 0;
+    }
+
+}
+
+long double Texttomath::total() {
+    long double total = 0;
+    if (count > 1)
+    {
+        for (int i = 1; i < count; i++) {
+            total += external_value[i];
+        }
+        return total;
+    }
+    else {
+        cout << "too few variable" << endl;
+        return 0;
+    }
+
 }
