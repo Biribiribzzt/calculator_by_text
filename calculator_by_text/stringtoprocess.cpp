@@ -114,7 +114,7 @@ void Texttomath::splitString(const string& str, string& part1, string& part2, st
     // Look for the position of the operator (+, -, *, /) in the string
     size_t operatorPos = string::npos;
     for (size_t i = 0; i < trimmedStr.size(); ++i) {
-        if (trimmedStr[i] == '+' || trimmedStr[i] == '-' || trimmedStr[i] == '*' || trimmedStr[i] == '/' || trimmedStr[i] == '^' || trimmedStr[i] == '!' || trimmedStr[i] == '=') {
+        if (trimmedStr[i] == '+' || trimmedStr[i] == '-' || trimmedStr[i] == '*' || trimmedStr[i] == '/' || trimmedStr[i] == '^' || trimmedStr[i] == '!' || trimmedStr[i] == '=' || trimmedStr[i] == '$') {
             operatorPos = i;
             break;
         }
@@ -158,7 +158,7 @@ uint8_t Texttomath::Return_process() {
     else if (opt == "^") return process = 5;
     else if (opt == "=") return process = 6;
     else if (opt == "!") return process = 7;
-
+    else if (opt == "$") return process = 8;
     else return 404;
 }
 
@@ -170,6 +170,10 @@ long double factorial(int n) {
         result *= i;
     }
     return result;
+}
+
+long double squreroot(int n) {
+    return sqrtl(n);
 }
 
 //calculate the input text by check_case and return_process
@@ -229,6 +233,7 @@ long double Texttomath::calculate() {
     case 5: return pow(num1, num2); break;
     case 6: if (is_intialized) { cout << "variable intialized" << endl; } is_error = 1; return num1; break;
     case 7: return factorial(num1); break;
+    case 8: return squreroot(num1); break;
     default:
         cout << "No valid operation found." << endl;
         return 0;
